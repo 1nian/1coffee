@@ -1,23 +1,62 @@
-import { Injectable } from '@nestjs/common';
-
-export type User = any;
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entity/user.entity';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      userId: 1,
-      username: '111',
-      password: '111',
-    },
-    {
-      userId: 2,
-      username: '222',
-      password: '222',
-    },
-  ];
+  constructor(
+    @InjectRepository(User)
+    private readonly user: Repository<User>,
 
-  async findOne(username: string) {
-    return this.users.find((user) => user.username === username);
+    private readonly jwtService: JwtService,
+  ) {}
+
+  // 生成token
+  async genToken(result) {
+    const payload = { sub: result.userId, username: result.username };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
+  }
+
+  // 注册
+  async createUser(createUserDto: CreateUserDto) {
+    const data = new User();
+
+    data.username = createUserDto.username;
+    data.password = createUserDto.password;
+
+    const findRes = await this.user.findOne({
+      where: { username: createUserDto.username },
+    });
+
+    if (findRes?.userId) {
+      throw new HttpException('用户名已存在', HttpStatus.FORBIDDEN);
+    }
+
+    const res = await this.user.save(data);
+
+    if (!res.userId) {
+      throw new HttpException('创建失败', HttpStatus.FORBIDDEN);
+    }
+
+    return this.genToken(res);
+  }
+
+  // 登录
+  async findOne(createUserDto: CreateUserDto) {
+    const res = await this.user.findOne({
+      where: { username: createUserDto.username },
+    });
+
+    if (!(res?.userId && res?.password === createUserDto.password)) {
+      throw new HttpException('用户名或密码错误', HttpStatus.FORBIDDEN);
+    }
+
+    return this.genToken(res);
   }
 }
