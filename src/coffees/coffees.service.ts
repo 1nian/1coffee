@@ -1,62 +1,34 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
-import { Coffees } from './entities/coffee.entity';
+import { Coffee } from './schemas/coffee.schema';
 
 @Injectable()
 export class CoffeesService {
-  private coffees: Coffees[] = [
-    {
-      id: 1,
-      name: '111',
-      price: 100,
-      description: '黑咖啡',
-    },
-  ];
+  constructor(@InjectModel(Coffee.name) private coffeeModel: Model<Coffee>) {}
 
-  create(createCoffeeDto: CreateCoffeeDto) {
-    let id = new Date().getTime();
+  async create(createCoffeeDto: CreateCoffeeDto) {
+    const createCoffee = new this.coffeeModel(createCoffeeDto);
+    await createCoffee.save();
 
-    this.coffees.push({ ...createCoffeeDto, id });
-
-    return createCoffeeDto;
+    return true;
   }
 
-  findAll() {
-    return this.coffees;
+  async findAll() {
+    return await this.coffeeModel.find().exec();
   }
 
   findOne(id: number) {
-    let findOne = this.coffees.find((coffee) => coffee.id === id);
-
-    if (!findOne) {
-      throw new HttpException(`#${id} Coffee not found`, HttpStatus.FORBIDDEN);
-    }
-
-    return findOne;
+    return 'findOne';
   }
 
   update(id: number, updateCoffeeDto: UpdateCoffeeDto) {
-    let findIndex = this.coffees.findIndex((coffee) => coffee.id === id);
-    if (!(findIndex > -1)) {
-      throw new HttpException(`#${id} Coffee not found`, HttpStatus.FORBIDDEN);
-    }
-
-    this.coffees[findIndex] = {
-      ...this.coffees[findIndex],
-      ...updateCoffeeDto,
-    };
-
     return `This action updates a #${id} coffee`;
   }
 
   remove(id: number) {
-    // 通过id删除coffees
-    let findIndex = this.coffees.findIndex((coffee) => coffee.id === id);
-    if (!(findIndex > -1)) {
-      throw new HttpException(`#${id} Coffee not found`, HttpStatus.FORBIDDEN);
-    }
-    this.coffees.splice(findIndex, 1);
     return `This action removes a #${id} coffee`;
   }
 }
