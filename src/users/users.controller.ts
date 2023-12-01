@@ -1,9 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { skipJwt } from '../decorator/jwt.decorator';
+import { SkipJwt } from '../decorator/jwt.decorator';
 
-@skipJwt()
+@SkipJwt()
 @Controller()
 export class UsersController {
   constructor(private usersService: UsersService) {}

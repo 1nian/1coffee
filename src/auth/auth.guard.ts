@@ -27,8 +27,6 @@ export class AuthGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    console.log(isJwt);
-
     if (isJwt) {
       return true;
     }
