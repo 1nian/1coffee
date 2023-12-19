@@ -28,7 +28,12 @@ export class CoffeesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.coffeesService.findOne(+id);
+    return this.coffeesService.findOne(id);
+  }
+
+  @Post('/query')
+  queryCoffeeList(@Body() body: any) {
+    return this.coffeesService.findOneByName(body.name, body.page, body.limit);
   }
 
   @Patch(':id')
@@ -36,11 +41,11 @@ export class CoffeesController {
     @Param('id') id: string,
     @Body(new ValidationPipe()) updateCoffeeDto: UpdateCoffeeDto,
   ) {
-    return this.coffeesService.update(+id, updateCoffeeDto);
+    return this.coffeesService.update(id, updateCoffeeDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.coffeesService.remove(+id);
+    return this.coffeesService.remove(id);
   }
 }

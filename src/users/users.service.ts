@@ -15,7 +15,7 @@ export class UsersService {
   ) {}
 
   // 生成token
-  async genToken(result) {
+  async genToken(result: User) {
     const payload = { sub: result.userId, username: result.username };
 
     return {

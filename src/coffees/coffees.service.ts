@@ -20,15 +20,41 @@ export class CoffeesService {
     return await this.coffeeModel.find().exec();
   }
 
-  findOne(id: number) {
-    return 'findOne';
+  findOne(id: string) {
+    return this.coffeeModel.findOne({ name: id }).exec();
   }
 
-  update(id: number, updateCoffeeDto: UpdateCoffeeDto) {
-    return `This action updates a #${id} coffee`;
+  async findOneByName(name: string, page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+
+    const queryOptions = name
+      ? this.coffeeModel.findOne({ name: { $regex: new RegExp(name, 'i') } })
+      : {};
+
+    const query = this.coffeeModel.find(queryOptions);
+
+    query.skip(skip).limit(limit).sort({ _id: 'desc' });
+
+    // 执行查询并获取列表
+    const list = await query.exec();
+
+    // 获取总记录数
+    const total = await this.coffeeModel.countDocuments(queryOptions);
+
+    let reslut = { list, total };
+
+    if (!Array.isArray(list)) {
+      reslut.list = [list];
+    }
+
+    return reslut;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} coffee`;
+  update(id: string, updateCoffeeDto: UpdateCoffeeDto) {
+    return this.coffeeModel.findByIdAndUpdate({ _id: id }, updateCoffeeDto);
+  }
+
+  remove(id: string): Promise<any> {
+    return this.coffeeModel.deleteOne({ _id: id });
   }
 }
