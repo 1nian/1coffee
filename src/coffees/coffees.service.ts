@@ -21,7 +21,7 @@ export class CoffeesService {
   }
 
   findOne(id: string) {
-    return this.coffeeModel.findOne({ name: id }).exec();
+    return this.coffeeModel.findOne({ _id: id }).exec();
   }
 
   async findOneByName(name: string, page: number = 1, limit: number = 10) {
