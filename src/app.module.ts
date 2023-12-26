@@ -9,6 +9,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { UsersModule } from './users/users.module';
 import { MysqlModule } from './database/mysql/mysql.module';
 import { CustomRequestInterceptor } from './common/response';
+import { MinioModule } from './minio/minio.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CustomRequestInterceptor } from './common/response';
     CoffeesModule,
     AuthModule,
     UsersModule,
+    MinioModule,
   ],
   controllers: [AppController],
   providers: [
