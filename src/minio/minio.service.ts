@@ -9,7 +9,7 @@ export class MinioService {
 
   constructor() {
     this.minioClient = new Minio.Client({
-      endPoint: '127.0.0.1',
+      endPoint: '82.157.233.6',
       port: 9000,
       useSSL: false,
       accessKey: 'minioadmin',

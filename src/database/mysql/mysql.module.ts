@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forRoot({
       // 数据库类型
       type: 'mysql',
-      host: 'localhost',
+      host: '82.157.233.6',
       // 端口号
       port: 3306,
       // 用户名
